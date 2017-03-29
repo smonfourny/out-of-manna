@@ -9,12 +9,13 @@ void getLastWord(char *input, char *lastWord);
 void makeLowerCase(char *toChange);
 void copyString(char *newString, char *oldString);
 void purgeExtraChars(char *toChange);
+int findRhyme(char *inWord, int startLine, int endLine);
 
 void main()
 {
 	char playerIn[256];
 	char lastWord[256];
-	printf("Give a string to print.\n");
+	printf("Enter a phrase that ends with a word that rhymes with cool.\n");
 	fgets(playerIn,255,stdin);
 	removeEnter(playerIn);
 	printParts(playerIn);
@@ -24,6 +25,15 @@ void main()
 	printParts(lastWord);
 	purgeExtraChars(lastWord);
 	printParts(lastWord);
+	int isRhyme = findRhyme(lastWord,13,17);
+	if (isRhyme == 1)
+	{
+		printf("The word at the end of your phrase does rhyme with cool!\n");
+	}
+	else
+	{
+		printf("The word at the end of your phrase does not rhyme with cool...\n");
+	}
 
 }
 
@@ -152,5 +162,32 @@ void purgeExtraChars(char *toChange)
 	newString[counter] = '\0';
 
 	copyString(toChange,newString);
+
+}
+
+
+int findRhyme(char *inWord, int startLine, int endLine)
+{
+	FILE *rhymeList;
+	char *currentWord;
+	char wordCopy[256];
+	size_t wordSize = 256;
+	ssize_t thisLine;
+	int counter = 1;
+	rhymeList = fopen("rhymelist.txt","r");
+
+	while ((thisLine = getline(&currentWord,&wordSize,rhymeList)) != -1)
+	{
+		//Only works when you copy the word from the file to a new string
+		copyString(wordCopy,currentWord);
+		removeEnter(wordCopy);
+		if ((strcmp(wordCopy,inWord) == 0) && (counter >= startLine) && (counter <= endLine))
+		{
+			return 1;
+		}
+		counter++;
+	}
+
+	return 0;
 
 }
