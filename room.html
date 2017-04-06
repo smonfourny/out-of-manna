@@ -10,12 +10,15 @@
 	<!-- Form with 4 buttons -->
 	<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
 		<!-- Check for name of submit button in CGI script to process the right url -->
-		<input id="N" class="button" type="submit" value="North"> <br/>
-		<input id="W" class="button" type="submit" value="West">
+		<!-- Names are added to be read by CGI-->
+		<!-- Values change the text on the actual button displayed-->
+		<input id="N" class="button" type="submit" value="North" name="North"> <br/>
+		<input id="W" class="button" type="submit" value="West" name="West">
 		<!-- Read in command -->
 		<input id="cmd" type="text" name="command">
-		<input id="E" class="button" type="submit" value="East"> <br/>
-		<input id="S" class="button" type="submit" value="South">
+		<input id="E" class="button" type="submit" value="East" name="East"> <br/>
+		<input id="S" class="button" type="submit" value="South" name="South">
 	</form>
 	</body>
 </html>
+	W
