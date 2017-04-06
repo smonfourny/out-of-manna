@@ -1,0 +1,27 @@
+h1{
+    /* Align headers in the center */
+    text-align: center;
+}
+img#testimg{
+    /* Change size of image */
+    height: 300px;
+    width: 300px;
+}
+input#cmd{
+
+}
+input.button{
+    padding: 5px;
+}
+input#N{
+    text-align: center;
+}
+input#W{
+    /*float:left;*/
+}
+input#E{
+    /*float:right;*/
+}
+input#S{
+    text-align: center;
+}

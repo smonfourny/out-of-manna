@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>Enter Room Name Here</title>
+		<!--Linking CSS-->
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body>
+	<h1>Enter Room Name Here</h1>
+	<img id=testimg src="heckert_gnu.big.png">
+	<!-- Form with 4 buttons -->
+	<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
+		<!-- Check for name of submit button in CGI script to process the right url -->
+		<input id="N" class="button" type="submit" value="North"> <br/>
+		<input id="W" class="button" type="submit" value="West">
+		<!-- Read in command -->
+		<input id="cmd" type="text" name="command">
+		<input id="E" class="button" type="submit" value="East"> <br/>
+		<input id="S" class="button" type="submit" value="South">
+	</form>
+	</body>
+</html>
