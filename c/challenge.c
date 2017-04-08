@@ -5,7 +5,9 @@
 
 void printParts(char *toPrint);
 void printHTML(char *toPrint);
+int checkState(char *toPrint);
 void removeEnter(char *toChange);
+int getInputState(char *playerIn);
 int checkTrailingSpaces(char *toCheck);
 void getLastWord(char *input, char *lastWord);
 void makeLowerCase(char *toChange);
@@ -20,20 +22,17 @@ void main()
 	char lastWord[256];
 	int linesInFile[2] = {0,0};
 	int inputValidity = 0;
+	int inputState;
 	pickWord(linesInFile);
-	while(inputValidity == 0)
-	{
-		fgets(playerIn,255,stdin);
-		removeEnter(playerIn);
-		inputValidity = checkTrailingSpaces(playerIn);
-	}
-	//printParts(playerIn);
+	fgets(playerIn,255,stdin);
+	inputValidity = checkTrailingSpaces(playerIn);
+	printf("Input is: %s okay <br></br>",playerIn);
+	inputState = getInputState(playerIn);
+	printf("Input is: %s okay <br></br>",playerIn);
 	getLastWord(playerIn,lastWord);
-	//printParts(lastWord);
 	makeLowerCase(lastWord);
-	//printParts(lastWord);
 	purgeExtraChars(lastWord);
-	//printParts(lastWord);
+	printf("Last word is: %s okay <br></br>",lastWord);
 	int isRhyme = findRhyme(lastWord,linesInFile[0],linesInFile[1]);
 	if (isRhyme == 1)
 	{
@@ -60,6 +59,52 @@ void removeEnter(char *toChange)
 		counter++;
 	}
 	toChange[counter] = '\0';
+}
+
+int getInputState(char *playerIn)
+{
+	char *pointer;
+
+	pointer = playerIn;
+
+	int counter = 0;
+
+	int inputState = 0;
+
+	while(*pointer != '\0')
+	{
+		if (counter < 3)
+		{
+			if (*pointer == 'F')
+			{
+				inputState++;
+			}
+			if (*pointer == 'T')
+                        {
+                                inputState+=2;
+                        }
+			if (*pointer == '1')
+                        {
+                                inputState+=4;
+                        }
+			if (*pointer == '2')
+                        {
+                                inputState+=8;
+                        }
+		}
+		if (counter > 3)
+		{
+			playerIn[counter - 4] = *pointer;
+		}
+		*pointer++;
+		counter++;
+	}
+	playerIn[counter - 4] = '\0';
+
+	return inputState;
+
+	
+
 }
 
 int checkTrailingSpaces(char *toCheck)
@@ -120,7 +165,7 @@ void getLastWord(char *input, char *lastWord)
 {
 	char *pointer;
 
-	pointer = strrchr(input,' ');
+	pointer = strrchr(input,'+');
 	if (!pointer)
 	{
 		copyString(lastWord,input);
