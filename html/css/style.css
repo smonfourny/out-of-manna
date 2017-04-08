@@ -1,12 +1,32 @@
+
+.main {
+    background: url(../img/bg.png) no-repeat center center fixed; 
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          -o-background-size: cover;
+          background-size: cover;
+    background-position: 0 20%;
+    padding: 3em 3em 3em 3em;
+    height: 70%;
+}
+
+.controls {
+    height: 30%;
+}
+
+div {
+    text-align: center;
+}
+
+div div div {
+    display: inline-block;
+}
+
 h1{
     /* Align headers in the center */
     text-align: center;
 }
-img#testimg{
-    /* Change size of image */
-    height: 300px;
-    width: 300px;
-}
+
 input#cmd{
 
 }
