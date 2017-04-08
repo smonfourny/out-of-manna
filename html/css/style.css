@@ -1,11 +1,14 @@
+body {
+    overflow: hidden;
+}
 
 .main {
-    background: url(../img/bg.png) no-repeat center center fixed; 
+    background: url(../img/bg.png) no-repeat center center; 
           -webkit-background-size: cover;
           -moz-background-size: cover;
           -o-background-size: cover;
           background-size: cover;
-    background-position: 0 20%;
+/*    background-position: 20% 20%;*/
     padding: 3em 3em 3em 3em;
     height: 70%;
 }
