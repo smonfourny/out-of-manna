@@ -6,6 +6,17 @@
 	</head>
 	<body>
 	<div class="main">
+		<div id="text" class="output">
+			<p>It is pitch black. You are likely to be eaten by a grue. </p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut blandit quis ex nec eleifend. Aliquam semper mi sed viverra laoreet. Nunc euismod ipsum ligula, ut tristique turpis accumsan sit amet. Donec dolor risus, lacinia elementum sem sit amet, faucibus dictum justo. Vestibulum et est quam. Etiam sagittis scelerisque tincidunt. Cras egestas porta nisl ut luctus. Praesent id iaculis erat. Donec dapibus, dui eu molestie faucibus, quam lectus hendrerit augue, vitae ultricies sapien sapien nec nunc. Quisque quam sapien, eleifend cursus sapien non, efficitur laoreet eros. Curabitur sed gravida magna. Cras tempor luctus arcu nec porta. Suspendisse potenti. Nullam tincidunt non libero eu commodo. </p>
+
+			<p> Vestibulum ut commodo massa. Nullam felis urna, suscipit ac molestie id, iaculis sed augue. Proin sollicitudin, turpis quis condimentum pretium, eros urna euismod enim, et imperdiet erat mi nec dui. Sed risus nunc, elementum et justo nec, sodales volutpat elit. Suspendisse orci justo, mollis vel enim vel, convallis sodales tellus. Etiam pellentesque nulla sed nunc euismod fermentum. Aenean mattis, risus a tempor faucibus, augue nulla efficitur quam, nec efficitur nibh sem eu eros. Nam ac nulla magna. Vestibulum sapien ligula, elementum a vehicula sit amet, consectetur id ipsum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		</div>
+		<div id="inv" class="output">
+			<p><b> Inventory </b> </p>
+			<p> gold: 5 </p>
+			<p> "manna": 5 </p>
+		</div>
 	</div>
 	<div class="controls">
 
@@ -13,6 +24,8 @@
 		<div>
 		<!-- Temporary, will change to transporter.py once implemented -->
 		<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
+			<input type="hidden" name="inventory" value="10,10">
+			<input type="hidden" name="URL" value="http://cs.mcgill.ca/~smonfo1">
 			<input id="N" class="button" type="submit" value="North" name="North">
 		</form>
 		</div>
@@ -20,25 +33,32 @@
 		<div>
 			<div>
 			<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
+				<input type="hidden" name="inventory" value="10,10">
+				<input type="hidden" name="URL" value="http://cs.mcgill.ca/~smonfo1">
 				<input id="W" class="button" type="submit" value="West" name="West">
 			</form>
 			</div>
 			<div>
 			<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
 				<input type="hidden" name="inventory" value="10,10">
+				<input type="hidden" name="URL" value="http://cs.mcgill.ca/~smonfo1">
 				<input id="cmd" type="text" name="command">
 			</form>
 			</div>
 			<!-- Temporary, will change to transporter.py once implemented -->
 			<div>
 			<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
+				<input type="hidden" name="inventory" value="10,10">
+				<input type="hidden" name="URL" value="http://cs.mcgill.ca/~smonfo1">
 				<input id="E" class="button" type="submit" value="East" name="East">
 			</form>
 			</div>
 		</div>
 		<div>
 		<!-- Temporary, will change to transporter.py once implemented -->
-		<form method="post" action="http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi">
+		<form method="post" action="http://www.cs.mcgill.ca/~dmarci1/cgi-bin/transporter.py">
+			<input type="hidden" name="inventory" value="10,10">
+			<input type="hidden" name="URL" value="http://cs.mcgill.ca/~smonfo1">
 			<input id="S" class="button" type="submit" value="South" name="South">
 		</form>
 		</div>
