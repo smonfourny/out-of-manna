@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 int* parseInput(char *, char*); // Function prototype to parse given input
-void printHTML(int, int, char*);
+int getDropN(char*); // For getting n from drop cmd
+void printHTML(int, int, int, int); // To print the actual html
+void toUp(char *); // String to uppercase
+void alterRes(int); // To alter hidden resources
 
 int main(){
   int n = atoi(getenv("CONTENT_LENGTH")); // Get length of input
@@ -13,10 +17,26 @@ int main(){
   // We are expecting inventory to be first and command to be last
   strtok_r(inv, "&", &cmd);
   int* numbers = parseInput(inv, cmd); // Remove the names from input and get them into raw values
+  toUp(cmd); // Capitalize cmd
   int mana = *(numbers); // numbers[0] has mana
   int gold = *(numbers+1); // numbers[1] has gold
   // Deal with various commands with if statements
-  printHTML(mana, gold,cmd);
+  if(strncmp(cmd, "DROP", 4)==0){
+    int n=getDropN(cmd); // The number part of the command is how much we want to drop
+    printHTML(mana, gold, 0, n); // Call print method, 3rd argument is which command
+  }
+  else if(strncmp(cmd, "PLAY", 4)==0){
+    printHTML(mana, gold, 1, 0);
+  }
+  else if(strncmp(cmd,"EXIT", 4)==0){
+    printHTML(mana, gold, 2, 0);
+  }
+  else if(strncmp(cmd,"REFRESH", 7)==0){
+    printHTML(mana, gold, 3, 0);
+  }
+  else{ // Not a valid command, error
+    printHTML(mana, gold, 4, 0);
+  }
   free(inv); // Free memory
   free(cmd);
   return 0; // Successfully finished
@@ -63,11 +83,127 @@ int* parseInput(char* inv, char* cmd){
   int* nbAsPtr=numbers; // Make a pointer that points to array 
   return nbAsPtr; 
 }
-void printHTML(int mana, int gold, char* cmd){  
+
+int getDropN(char* cmd){
+  // Get everything after DROP in cmd
+  char* tmp = (char*)malloc(10); // Allocate memory for a tmp string to store 
+  int j = 4; // Index after DROP
+  int k = 0; // Index for temp
+  char c = *(cmd+j); // Get next char
+  while(c!='\0'){ // Loop until null
+    *(tmp+k)=c; // Assign char to temp string
+    j++;
+    k++;
+    c=*(cmd+j); // Get next char of cmd
+  }
+  int n = atoi(tmp); // tmp now stores just the number part of drop
+  free(tmp);
+  return n;
+}
+
+void printHTML(int mana, int gold, int cmd, int n){
+  int enough=1; // Boolean for if we have enough money
+  if(cmd==0){ // Drop command
+    if(gold-n<0){ // If not enough money
+      enough = 0;
+    }
+    else{
+    gold-=n; // Drop n gold
+    mana+=(n/2); // Get half of hold in mana
+    alterRes(n); // Change resources.csv
+    } 
+  }
   printf("Content-type: text/html\n\n"); // Display HTML
-  printf("<html>\n");
-  printf("<body>\n"); // Opening tags
-  printf("%d mana, %d gold, %s command",mana, gold, cmd);
-  printf("</body>\n"
+  printf("<html>\n"
+	 "<head>\n"
+	 "<title>4 2 0</title> \n"
+	 "<!--Linking CSS-->\n"
+	 "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\">\n"
+	 "</head>\n"
+	 "<body>\n"
+	 "<div class=\"main\">\n"
+	 "<div id=\"text\" class =\"output\">\n"
+	 "<p> It is pitch black. You are likely to be eaten by a grue.</p>\n"
+	 "</div>\n"
+	 "<div id=\"inv\" class=\"output\">\n"
+	 "<p><b> Inventory </b> </p> \n");
+
+  printf("<p> gold: %d </p>\n", gold);
+  printf("<p> mana: %d </p>\n", mana);
+
+  printf("</div>\n"
+	 "</div>\n"
+	 "<div class=\"controls\">\n"
+	 "<h1>4 2 0</h1>\n");
+  printf("<div>\n"
+	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~smonfo1/cgi-bin/transporter.py\">\n");
+
+  printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
+  
+  printf("<input type=\"hidden\" name=\"URL\" value=\"http://cs.mcgill.ca/~smonfo1\">\n"
+	 "<input id=\"N\" class=\"button\" type=\"submit\" value=\"North\" name=\"North\">\n"
+	 "</form>\n"
+	 "</div>\n");
+  printf("<div>\n");
+  printf("<div>\n"
+	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+
+  printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
+  
+  printf("<input type=\"hidden\" name=\"URL\" value=\"http://cs.mcgill.ca/~smonfo1\">\n"
+	 "<input id=\"W\" class=\"button\" type=\"submit\" value=\"West\" name=\"West\">\n"
+	 "</form>\n"
+	 "</div>\n");
+
+  
+  printf("<div>\n"
+	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+
+  printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
+  
+  printf("<input id=\"cmd\" type=\"text\" name=\"command\">\n"
+	 "</form>\n"
+	 "</div>\n");
+  
+  printf("<div>\n"
+	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+
+  printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
+  
+  printf("<input type=\"hidden\" name=\"URL\" value=\"http://cs.mcgill.ca/~smonfo1\">\n"
+	 "<input id=\"E\" class=\"button\" type=\"submit\" value=\"East\" name=\"East\">\n"
+	 "</form>\n"
+	 "</div>\n"
+	 "</div>\n");
+  
+  printf("<div>\n"
+	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+
+  printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
+  
+  printf("<input type=\"hidden\" name=\"URL\" value=\"http://cs.mcgill.ca/~smonfo1\">\n"
+	 "<input id=\"S\" class=\"button\" type=\"submit\" value=\"South\" name=\"South\">\n"
+	 "</form>\n"
+	 "</div>\n");
+  printf("</div>\n"
+	 "</body>\n"
 	 "</html>\n"); // Closing tags
+}
+
+void toUp(char* string){
+  int n = strlen(string);
+  for(int i=0; i<n; i++){ // Loop through entire string
+    *(string+i)=toupper(*(string+i)); // Make each entry upper case
+  }
+}
+
+void alterRes(int goldAdded){ // How much gold to gain
+  FILE* in = fopen("../resources.csv", "rt"); // new pointer to read existing vals
+  int mana, gold, occ;
+  fscanf(in, "%d,%d,%d", &mana, &gold, &occ);
+  fclose(in); // Close csv for reading
+  gold+=goldAdded;
+  FILE* out = fopen("../resources.csv", "wt"); // Overwrite csv
+  fprintf(out,"%d,%d,%d", mana, gold, occ); // Put in new values
+  fclose(out); 
 }
