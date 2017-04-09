@@ -47,7 +47,7 @@ void main()
 		int isRhyme = findRhyme(lastWord,linesInFile[0],linesInFile[1]);
 		if (isRhyme == 1)
 		{
-			if (inputState > 2)
+			if (inputState > 4)
 			{
 				addSongLine(playerIn);
 				printFile();
@@ -66,24 +66,35 @@ void main()
 			printf("<br></br>");
 			if (inputState == 1)
         		{
-                        	printBold("I stand over the lake and cast out my rod,");
+                        	printBold("I just can't comprehend it");
                         	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
                 	}
                 	else if (inputState == 2)
                 	{
-                        	printBold("The soft breeze in the mountains keeps me cool,");
+                        	printBold("I'm giving everything I've got");
                         	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
                 	}
                 	else if (inputState == 3)
                 	{
-                        	printBold("I arrive at the park and begin to wander,");
+                        	printBold("I won't slow down");
                         	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
                 	}
                 	else if (inputState == 4)
                 	{
-                        	printBold("I stare solemnly at the corner,");
+                        	printBold("I'll keep going on");
                         	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
                 	}
+			else if (inputState == 5)
+                        {
+                                printBold("So it's not up to you");
+                                printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                        }
+                        else if (inputState == 6)
+                        {
+                                printBold("So don't say you can't make a move");
+                                printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                        }
+
 
 		}
 	}
@@ -189,10 +200,6 @@ int getInputState(char *playerIn)
 	{
 		if (counter < 2)
 		{
-			if (*pointer == 'G')
-			{
-				return 0;
-			}
 			if (*pointer == '1')
 			{
 				inputState++;
@@ -383,32 +390,47 @@ void pickWord(int inputState)
 	{
 		if (picker == 0)
 		{
-			printBold("I stand over the lake and cast out my rod,");
-			addSongLine("I stand over the lake and cast out my rod,");
+			printBold("I just can't comprehend it");
+			addSongLine("I just can't comprehend it");
 			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
 		}
 		else if (picker == 1)
         	{
-			printBold("The soft breeze in the mountains keeps me cool,");
-			addSongLine("The soft breeze in the mountains keeps me cool,");
+			printBold("I'm giving everything I've got");
+			addSongLine("I'm giving everything I've got");
 			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
         	}
 	}
-	if ((inputState == 1) || (inputState == 2))
+	else if ((inputState == 1) || (inputState == 2))
 	{
 		if (picker == 0)
         	{
-			printBold("I arrive at the park and begin to wander,");
-			addSongLine("I arrive at the park and begin to wander,");
+			printBold("I won't slow down");
+			addSongLine("I won't slow down");
 			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
         	}
 		else if (picker == 1)
 		{
-			printBold("I stare solemnly at the corner,");
-			addSongLine("I stare solemnly at the corner,");
+			printBold("I'll keep going on");
+			addSongLine("I'll keep going on");
 			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
 		}
 	}
+	else if ((inputState == 3) || (inputState == 4))
+        {
+                if (picker == 0)
+                {
+                        printBold("So it's not up to you");
+                        addSongLine("So it's not up to you");
+                        printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                }
+                else if (picker == 1)
+                {
+                        printBold("So don't say you can't make a move");
+                        addSongLine("So don't say you can't make a move");
+                        printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                }
+        }
 
 }
 
@@ -417,22 +439,32 @@ void *pickLines(int inputState, int *lines)
 	if (inputState == 1)
 	{
 		lines[0] = 2;
-                lines[1] = 161;
+                lines[1] = 148;
 	}
 	else if (inputState == 2)
 	{
-		lines[0] = 164;
-                lines[1] = 293;
+		lines[0] = 151;
+                lines[1] = 428;
 	}
 	else if (inputState == 3)
 	{
-                lines[0] = 296;
-                lines[1] = 327;
+                lines[0] = 431;
+                lines[1] = 561;
         }
 	else if (inputState == 4)
 	{
-                lines[0] = 330;
-                lines[1] = 362;
+                lines[0] = 564;
+                lines[1] = 1114;
+        }
+	else if (inputState == 5)
+        {
+                lines[0] = 1117;
+                lines[1] = 1656;
+        }
+        else if (inputState == 6)
+        {
+                lines[0] = 1659;
+                lines[1] = 1688;
         }
 }
 
