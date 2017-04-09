@@ -3,14 +3,12 @@
 #include <time.h>
 #include <string.h>
 
-void printParts(char *toPrint);
 void printBold(char *toPrint);
 int checkState(char *toPrint);
 void removeEnter(char *toChange);
 void plusesToSpaces(char *toChange);
 void restoreCharacters(char *toChange);
 int getInputState(char *playerIn);
-int checkTrailingSpaces(char *toCheck);
 void getLastWord(char *input, char *lastWord);
 void makeLowerCase(char *toChange);
 void copyString(char *newString, char *oldString);
@@ -30,12 +28,10 @@ void main()
 	char playerIn[256];
 	char lastWord[256];
 	int linesInFile[2] = {0,0};
-	int inputValidity = 0;
 	int inputState;
 	fgets(playerIn,255,stdin);
 	plusesToSpaces(playerIn);
 	restoreCharacters(playerIn);
-	//inputValidity = checkTrailingSpaces(playerIn);
 	inputState = getInputState(playerIn);
 	if (inputState == 0)
 	{
@@ -227,50 +223,6 @@ int getInputState(char *playerIn)
 
 	
 
-}
-
-int checkTrailingSpaces(char *toCheck)
-{
-        char *pointer;
-
-        pointer = toCheck;
-
-        int counter = -1;
-
-        while(*pointer != '\0')
-        {
-                *pointer++;
-                counter++;
-        }
-	if(toCheck[counter] == ' ')
-	{
-		printParts("Please don't end your input with spaces.");
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-
-void printParts(char *toPrint)
-{
-        char *pointer;
-	struct timespec waitTime;
-	waitTime.tv_sec = 0;
-	waitTime.tv_nsec = 75000000;
-
-        pointer = toPrint;
-
-        while(*pointer != '\0')
-        {
-		printf("%c",*pointer);
-		fflush(stdout);
-		nanosleep(&waitTime, NULL);
-                *pointer++;
-        }
-	printf("\n");
 }
 
 void printBold(char *toPrint)
