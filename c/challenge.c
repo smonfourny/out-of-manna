@@ -4,7 +4,7 @@
 #include <string.h>
 
 void printParts(char *toPrint);
-void printHTML(char *toPrint);
+void printBold(char *toPrint);
 int checkState(char *toPrint);
 void removeEnter(char *toChange);
 int getInputState(char *playerIn);
@@ -14,35 +14,75 @@ void makeLowerCase(char *toChange);
 void copyString(char *newString, char *oldString);
 void purgeExtraChars(char *toChange);
 int findRhyme(char *inWord, int startLine, int endLine);
-void *pickWord(int *lines);
+void pickWord(int inputState);
+void *pickLines(int inputState, int *lines);
 
 void main()
 {
+	printf("Content-type: text/html\n\n");
+        printf("<html>");
+        printf("<body>");
 	char playerIn[256];
 	char lastWord[256];
 	int linesInFile[2] = {0,0};
 	int inputValidity = 0;
 	int inputState;
-	pickWord(linesInFile);
 	fgets(playerIn,255,stdin);
-	inputValidity = checkTrailingSpaces(playerIn);
-	printf("Input is: %s okay <br></br>",playerIn);
+	//inputValidity = checkTrailingSpaces(playerIn);
 	inputState = getInputState(playerIn);
-	printf("Input is: %s okay <br></br>",playerIn);
-	getLastWord(playerIn,lastWord);
-	makeLowerCase(lastWord);
-	purgeExtraChars(lastWord);
-	printf("Last word is: %s okay <br></br>",lastWord);
-	int isRhyme = findRhyme(lastWord,linesInFile[0],linesInFile[1]);
-	if (isRhyme == 1)
+	if (inputState == 0)
 	{
-		printParts("Good rhyme!");
+		pickWord(inputState);
+
 	}
 	else
 	{
-		printParts("That doesn't rhyme...");
-	}
+		getLastWord(playerIn,lastWord);
+		makeLowerCase(lastWord);
+		purgeExtraChars(lastWord);
+		pickLines(inputState, linesInFile);
+		int isRhyme = findRhyme(lastWord,linesInFile[0],linesInFile[1]);
+		if (isRhyme == 1)
+		{
+			if (inputState > 2)
+			{
+				printBold("You're winner!");
+			}
+			else {
+				printBold("Good job! Here's your next line to rhyme.");
+				printf("<br></br>");
+				pickWord(inputState);
+			}
+		}
+		else
+		{
+			printBold("That doesn't rhyme, try again. Here's your prompt:");
+			printf("<br></br>");
+			if (inputState == 1)
+        		{
+                        	printBold("I stand over the lake and cast out my rod,");
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                	}
+                	else if (inputState == 2)
+                	{
+                        	printBold("The soft breeze in the mountains keeps me cool,");
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                	}
+                	else if (inputState == 3)
+                	{
+                        	printBold("I arrive at the park and begin to wander,");
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                	}
+                	else if (inputState == 4)
+                	{
+                        	printBold("I stare solemnly at the corner,");
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+                	}
 
+		}
+	}
+	printf("</body>");
+        printf("</html>");
 }
 
 void removeEnter(char *toChange)
@@ -73,33 +113,37 @@ int getInputState(char *playerIn)
 
 	while(*pointer != '\0')
 	{
-		if (counter < 3)
+		if (counter < 2)
 		{
-			if (*pointer == 'F')
+			if (*pointer == 'G')
+			{
+				return 0;
+			}
+			if (*pointer == '1')
 			{
 				inputState++;
 			}
-			if (*pointer == 'T')
-                        {
-                                inputState+=2;
-                        }
-			if (*pointer == '1')
-                        {
-                                inputState+=4;
-                        }
 			if (*pointer == '2')
                         {
-                                inputState+=8;
+                                inputState+=3;
+                        }
+			if (*pointer == '3')
+                        {
+                                inputState+=5;
+                        }
+			if (*pointer == 'T')
+                        {
+                                inputState++;
                         }
 		}
-		if (counter > 3)
+		if (counter > 2)
 		{
-			playerIn[counter - 4] = *pointer;
+			playerIn[counter - 3] = *pointer;
 		}
 		*pointer++;
 		counter++;
 	}
-	playerIn[counter - 4] = '\0';
+	playerIn[counter - 3] = '\0';
 
 	return inputState;
 
@@ -151,14 +195,9 @@ void printParts(char *toPrint)
 	printf("\n");
 }
 
-void printHTML(char *toPrint)
+void printBold(char *toPrint)
 {
-	printf("Content-type: text/html\n\n");
-	printf("<html>");
-	printf("<body>");
 	printf("<h1>%s</h1>",toPrint);
-	printf("</body>");
-	printf("</html>");
 }
 
 void getLastWord(char *input, char *lastWord)
@@ -283,36 +322,60 @@ int findRhyme(char *inWord, int startLine, int endLine)
 
 }
 
-void *pickWord(int *lines)
+void pickWord(int inputState)
 {
-	int picker = 0;
-	while (picker == 0)
+	int picker;
+	srand(time(NULL));
+	picker = rand() % 2;
+	if (inputState == 0)
 	{
-		srand(time(NULL));
-		picker = rand() % 4;
+		if (picker == 0)
+		{
+			printBold("I stand over the lake and cast out my rod,");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+		}
+		else if (picker == 1)
+        	{
+			printBold("The soft breeze in the mountains keeps me cool,");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+        	}
 	}
-	if(picker == 1)
+	if ((inputState == 1) || (inputState == 2))
 	{
-		printHTML("I stand over the lake and cast out my rod,");
+		if (picker == 0)
+        	{
+			printBold("I arrive at the park and begin to wander,");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+        	}
+		else if (picker == 1)
+		{
+			printBold("I stare solemnly at the corner,");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form>");
+		}
+	}
+
+}
+
+void *pickLines(int inputState, int *lines)
+{
+	if (inputState == 1)
+	{
 		lines[0] = 2;
-		lines[1] = 161;
+                lines[1] = 161;
 	}
-	else if(picker == 2)
-        {
-		printHTML("The soft breeze in the mountains keeps me cool,");
-                lines[0] = 164;
+	else if (inputState == 2)
+	{
+		lines[0] = 164;
                 lines[1] = 293;
-        }
-	else if(picker == 3)
-        {
-		printHTML("I arrive at the park and begin to wander,");
+	}
+	else if (inputState == 3)
+	{
                 lines[0] = 296;
                 lines[1] = 327;
         }
-	else
+	else if (inputState == 4)
 	{
-		lines[0] = 1;
-                lines[1] = 1;
-	}
-
+                lines[0] = 330;
+                lines[1] = 362;
+        }
 }
