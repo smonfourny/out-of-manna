@@ -11,11 +11,13 @@ void alterRes(int); // To alter hidden resources
 int main(){
   int n = atoi(getenv("CONTENT_LENGTH")); // Get length of input
   char* inv = (char*)malloc(45); // Malloc a pointer to store input
-  char* cmd = (char*)malloc(30); // For 2nd input value, will be tokenized
+  char* mem = (char*)malloc(30); // Extra pointer to keep original spot, free has problems after tokenizing
+  char* cmd = mem; // For 2nd input value, will be tokenized
   fgets(inv,n+1,stdin); // Get input from stdin (POST)
   // Tokenize input, will make inv everything before & and cmd everything after
   // We are expecting inventory to be first and command to be last
   strtok_r(inv, "&", &cmd);
+  
   int* numbers = parseInput(inv, cmd); // Remove the names from input and get them into raw values
   toUp(cmd); // Capitalize cmd
   int mana = *(numbers); // numbers[0] has mana
@@ -38,7 +40,7 @@ int main(){
     printHTML(mana, gold, 4, 0);
   }
   free(inv); // Free memory
-  free(cmd);
+  free(mem);
   return 0; // Successfully finished
 }
 
@@ -78,7 +80,7 @@ int* parseInput(char* inv, char* cmd){
     *(temp+k)=*(cmd+i); // Assign current char to temp jth char
     k++; // Increment k 
   }
-  strcpy(cmd, temp); // Copy temp to in
+  strcpy(cmd, temp); // Copy temp to cmd
   free(temp); // Free mem used by temp
   int* nbAsPtr=numbers; // Make a pointer that points to array 
   return nbAsPtr; 
