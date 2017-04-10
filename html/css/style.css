@@ -1,19 +1,27 @@
-.main {
-    background: url(../img/bg.png) no-repeat center center; 
+body {
+    background: url(../img/gradient.png) no-repeat center center; 
           -webkit-background-size: cover;
           -moz-background-size: cover;
           -o-background-size: cover;
           background-size: cover;
-/*    background-position: 20% 20%;*/
+}
+
+.main {
+    background: url(../img/bg2.png) no-repeat center center; 
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          -o-background-size: cover;
+          background-size: cover;
+    background-position: 20% 20%;
     padding: 3em 3em 3em 3em;
-    height: 40em;
+    height: 100%;
     position: relative;
 }
 
 .output {
     background-color: rgba(255,255,255,0.7);
     display: inline-block;
-    border: 2px solid black;
+    border: 2px solid #EA6588;
 }
 
 div#inv {
