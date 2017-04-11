@@ -12,8 +12,6 @@ void alterRes(int); // To alter hidden resources
 void printRes(); // To print current resources
 int takeRes(int, int); // To take resources, return type to report error
 void oc(int); // Mark room as occupied or unoccupied
-void succ(int,int);
-
 
 int main(){
   int n = atoi(getenv("CONTENT_LENGTH")); // Get length of input
@@ -24,12 +22,19 @@ int main(){
   // Tokenize input, will make inv everything before & and cmd everything after
   // We are expecting inventory to be first and command to be last
   strtok_r(inv, "&", &cmd);
-  
+  int manaToTake, goldToTake;
+  if (strncmp(cmd, "command", 7)!=0){ // If not command, i.e. parsing choosing of resources
+    manaToTake= *(cmd+5)-'0'; // mana to take is 6th char minus ascii val of 0
+    goldToTake=*(cmd+12)-'0'; // gold is 13th char
+    char* t = "command=TAKE";
+    strcpy(cmd, t); // Copy TAKE into t
+  } 
   int* numbers = parseInput(inv, cmd); // Remove the names from input and get them into raw values
+ 
   toUp(cmd); // Capitalize cmd
   int mana = *(numbers); // numbers[0] has mana
   int gold = *(numbers+1); // numbers[1] has gold
-
+  
   if(mana <= 0){ // Death
     printHTML(mana, gold, 5, 0);
   }
@@ -52,16 +57,14 @@ int main(){
       printHTML(mana, gold, 6, 0);
     }
     else if(strncmp(cmd,"TAKE", 4)==0){
-      int manaToTake = *(numbers+2);
-      int goldToTake = *(numbers+3);
+    
       if(takeRes(manaToTake, goldToTake)){ // If successful, update mana & gold and refresh
 	mana += manaToTake;
 	gold += goldToTake;
 	printHTML(mana, gold, 3, 0);
       }
       else{ // Invalid amount requested
-	succ(manaToTake, goldToTake);
-	//printHTML(mana,gold, 7, 0); // Retry getting resources again
+	printHTML(mana,gold, 7, 0); // Retry getting resources again
       }
     }
     else{ // Not a valid command, error
@@ -76,7 +79,7 @@ int main(){
 
 int* parseInput(char* inv, char* cmd){
   // inv should be inventory=#%2C#, with %2C being a POST parsed comma and # being a number
-  int numbers[4]; // Array to store mana and gold, will return as ptr
+  int numbers[2]; // Array to store mana and gold, will return as ptr
   char* temp = (char*)malloc(40); // Malloc temp pointer
   int k=0; // Int to index through temp
   int j = 10; // Int to index through inv, start at 10, after =
@@ -102,27 +105,15 @@ int* parseInput(char* inv, char* cmd){
   }
   *(temp+k)='\0'; // Add null
   numbers[1] = atoi(temp); // Gold as an int
-  if (strncmp(cmd, "command", 7)==0){ // If command 
-    // cmd should be command=SOMETHING
-    // Trim off the command= part
-    int length = strlen(cmd);
-    k=0; // Reset temp index
-    for(int i=8; i<=length; i++){ // Loop through entries 8 to end of input 
-      *(temp+k)=*(cmd+i); // Assign current char to temp jth char
-      k++; // Increment k 
+  // cmd should be command=SOMETHING
+  // Trim off the command= part
+  int length = strlen(cmd);
+  k=0; // Reset temp index
+  for(int i=8; i<=length; i++){ // Loop through entries 8 to end of input 
+    *(temp+k)=*(cmd+i); // Assign current char to temp jth char
+    k++; // Increment k 
     }
-    strcpy(cmd, temp); // Copy temp to cmd
-  }
-  else{ // Otherwise, taking mana and gold, i.e. mana=0&gold=0
-    char c[2];
-    c[0]=*(cmd+5);
-    c[1]='\0';
-    numbers[2]= atoi(c); // mana to take is 6th char-ascii val of 0
-    c[0] = *(cmd+12);
-    numbers[3]=atoi(c); // gold is 12th char
-    char* t = "TAKE";
-    strcpy(cmd, t); // Copy TAKE into t
-  }
+  strcpy(cmd, temp); // Copy temp to cmd
   free(temp); // Free mem used by temp
   int* nbAsPtr=numbers; // Make a pointer that points to array 
   return nbAsPtr; 
@@ -207,7 +198,7 @@ void printHTML(int mana, int gold, int cmd, int n){
     }
     printRes();
     printf("<p> Pick how much gold and manna you'd like. Note that you can take at most 5 units of something.</p> \n"
-	   "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n"
+	   "<form method=\"post\" action=\"room.cgi\">\n"
 	   "<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
     printf("<select name=\"mana\">\n"
 	   "<option value=\"0\"> 0 Manna </option>\n"
@@ -270,7 +261,7 @@ void printHTML(int mana, int gold, int cmd, int n){
 
   
     printf("<div>\n"
-	   "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+	   "<form method=\"post\" action=\"room.cgi\">\n");
 
     printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
   
@@ -357,9 +348,4 @@ void oc(int occup){
   *(vals+2)=occup; // Mark room as occupied
   writeCSV(*(vals),*(vals+1),*(vals+2));
   free(vals);
-}
-
-void succ(int a, int b){
-  printf("Content-type: text/html\n\n"
-	 "%d %d",a, b);
 }
