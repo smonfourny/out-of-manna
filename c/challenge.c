@@ -24,6 +24,7 @@ int* parseInv(char*);
 
 void main()
 {
+	fflush(stdout);
 	printf("Content-type: text/html\n\n");
 	printf("<html><head><title>T h e F l o r a l S h o p p e</title><!--Linking CSS-->");
 	int n = atoi(getenv("CONTENT_LENGTH")); // Get the length of stdin
@@ -41,12 +42,18 @@ void main()
 	plusesToSpaces(playerIn);
 	restoreCharacters(playerIn);
 	inputState = getInputState(playerIn);
+	if (inputState == -1)
+	{
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
+		printBold("You're going to leave?");
+		printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
+                printf("<form method=\"POST\" action=\"../gametest.html\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
+	}
 	if (inputState == 0)
 	{
 		newSong();
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); //No cans (Set)
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can03.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
 		pickWord(inputState, mana, gold);
-		printf("<p>mana: %d, gold: %d</p>",mana,gold);
 	}
 	else
 	{
@@ -60,10 +67,11 @@ void main()
 			if (inputState > 4)
 			{
 				addSongLine(playerIn);
-				printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); //All cans (not set)
+				printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can00.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
 				printFile();
 				printBold("You're winner!");
-				printf("<p>mana: %d, gold: %d</p>",mana,gold);
+				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
+                                printf("<form method=\"POST\" action=\"../gametest.html\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
 			}
 			else {
 				addSongLine(playerIn);
@@ -74,7 +82,7 @@ void main()
 				pickWord(inputState, mana, gold);
 			}
 		}
-		else
+		else if (inputState != -1)
 		{
 			printImage(inputState);
 			printBold("That does not rhyme, try again. Here's your prompt:");
@@ -125,15 +133,15 @@ void printImage(int inputState)
 {
 	if ((inputState == 1) || (inputState == 2))
 	{
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // No cans
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can03.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // No cans
 	}
 	else if ((inputState == 3) || (inputState == 4))
         {
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // One can
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can02.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // One can
         }
 	else if ((inputState == 5) || (inputState == 6))
         {
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // Two cans
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can01.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // Two cans
         }
 }
 
@@ -251,6 +259,41 @@ int getInputState(char *playerIn)
                         {
                                 inputState++;
                         }
+		}
+		if ((counter == 3) && (*pointer == 'Q'))
+		{
+			*pointer++;
+			if (*pointer == 'U')
+			{
+				*pointer++;
+				if (*pointer == 'I')
+				{
+					*pointer++;
+					if (*pointer == 'T')
+					{
+						*pointer++;
+						if (*pointer == '\0')
+						{
+							return -1;
+						}
+						else
+						{
+							*pointer--;
+						}
+					}
+					else
+					{
+						*pointer--;
+					}
+				}
+				else
+				{
+					*pointer--;
+				}
+			}
+			else {
+				*pointer--;
+			}
 		}
 		if (counter > 2)
 		{
@@ -410,6 +453,7 @@ void printFile()
                 //Only works when you copy the word from the file to a new string
                 copyString(lineCopy,currentLine);
 		printf("<p>%s</p>",lineCopy);
+		fflush(stdout);
         }
 
 }
@@ -509,6 +553,7 @@ void *pickLines(int inputState, int *lines)
 
 void newSong()
 {
+	fflush(stdout);
 	FILE *file;
 	char emptyString[1];
 	emptyString[0] = '\0';
@@ -519,6 +564,7 @@ void newSong()
 
 void addSongLine(char *toWrite)
 {
+	fflush(stdout);
 	FILE *file;
         file = fopen("song.txt","a");
         fprintf(file,"%s\n",toWrite);
