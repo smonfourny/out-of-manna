@@ -196,7 +196,7 @@ void printHTML(int mana, int gold, int cmd, int n){
 	 "</div>\n");
   printf("<div>\n");
   printf("<div>\n"
-	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~jlore/cgi-bin/test.cgi\">\n");
+	 "<form method=\"post\" action=\"cgi-bin/room.cgi\">\n");
 
   printf("<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n",mana, gold);
   
