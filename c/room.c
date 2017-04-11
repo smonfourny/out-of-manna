@@ -163,7 +163,7 @@ void printHTML(int mana, int gold, int cmd, int n){
   }
   else if(cmd == 1){ // If play, print a box explaining game and linking to game
     printf("<p> You and I are going to create a song. Make sure that your lines rhyme with mine. </p>\n"
-	   "<form method=\"post\" action=\"http://cs.mcgill.ca/~jvince20/cgi-bin/challenge.cgi\">\n"
+	   "<form method=\"post\" action=\"challenge.cgi\">\n"
 	   "<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n", mana,gold);
     printf("<input type=\"submit\" value=\"GO\">\n");
   }
