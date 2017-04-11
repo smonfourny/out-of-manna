@@ -71,7 +71,7 @@ void main()
 				printFile();
 				printBold("You're winner!");
 				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                                printf("<form method=\"POST\" action=\"../gametest.html\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
+                                printf("<form method=\"POST\" action=\"./room.cgi\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"hidden\" name=\"command\" value=\"WIN\"><input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
 			}
 			else {
 				addSongLine(playerIn);
