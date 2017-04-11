@@ -7,6 +7,7 @@ int getDropN(char*); // For getting n from drop cmd
 void printHTML(int, int, int, int); // To print the actual html
 void toUp(char *); // String to uppercase
 void alterRes(int); // To alter hidden resources
+void oc(int); // Mark room as occupied or unoccupied
 
 int main(){
   int n = atoi(getenv("CONTENT_LENGTH")); // Get length of input
@@ -22,23 +23,30 @@ int main(){
   toUp(cmd); // Capitalize cmd
   int mana = *(numbers); // numbers[0] has mana
   int gold = *(numbers+1); // numbers[1] has gold
+
+  if(mana <= 0){ // Death
+    printHTML(mana, gold, 5, 0);
+  }
+  else{
   // Deal with various commands with if statements
-  if(strncmp(cmd, "DROP", 4)==0){
-    int n=getDropN(cmd); // The number part of the command is how much we want to drop
-    printHTML(mana, gold, 0, n); // Call print method, 3rd argument is which command
+    if(strncmp(cmd, "DROP", 4)==0){
+      int n=getDropN(cmd); // The number part of the command is how much we want to drop
+      printHTML(mana, gold, 0, n); // Call print method, 3rd argument is which command
+    }
+    else if(strncmp(cmd, "PLAY", 4)==0){
+      printHTML(mana, gold, 1, 0);
+    }
+    else if(strncmp(cmd,"EXIT", 4)==0){
+      printHTML(mana, gold, 2, 0);
+    }
+    else if(strncmp(cmd,"REFRESH", 7)==0){
+      printHTML(mana, gold, 3, 0);
+    }
+    else{ // Not a valid command, error
+      printHTML(mana, gold, 4, 0);
+    }
   }
-  else if(strncmp(cmd, "PLAY", 4)==0){
-    printHTML(mana, gold, 1, 0);
-  }
-  else if(strncmp(cmd,"EXIT", 4)==0){
-    printHTML(mana, gold, 2, 0);
-  }
-  else if(strncmp(cmd,"REFRESH", 7)==0){
-    printHTML(mana, gold, 3, 0);
-  }
-  else{ // Not a valid command, error
-    printHTML(mana, gold, 4, 0);
-  }
+  
   free(inv); // Free memory
   free(mem);
   return 0; // Successfully finished
@@ -115,28 +123,68 @@ void printHTML(int mana, int gold, int cmd, int n){
     alterRes(n); // Change resources.csv
     } 
   }
+  else if(cmd == 5 || cmd == 2){ // Death or exit, mark room as unoccupied
+    oc(0);
+  }
+  else if(cmd == 3){
+    oc(1);
+  }
   printf("Content-type: text/html\n\n"); // Display HTML
   printf("<html>\n"
 	 "<head>\n"
-	 "<title>4 2 0</title> \n"
-	 "<!--Linking CSS-->\n"
-	 "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\">\n"
-	 "</head>\n"
+	 "<title>T h e F l o r a l S h o p p e</title> \n"
+	 "<!--Linking CSS-->\n");
+  if(cmd == 5){ // Death screen, different css
+    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/dead.css\">\n");
+  }
+  else if(cmd == 2){ // Exit screen, different background, different css
+    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/exit.css\">\n");
+  }
+  else{ // Normal situation
+   printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\">\n"); 
+  }
+  printf("</head>\n"
 	 "<body>\n"
-	 "<div class=\"main\">\n"
+	 "<div class=\"main\" id=\"bg\">\n"
 	 "<div id=\"text\" class =\"output\">\n"
-	 "<p> It is pitch black. You are likely to be eaten by a grue.</p>\n"
-	 "</div>\n"
-	 "<div id=\"inv\" class=\"output\">\n"
-	 "<p><b> Inventory </b> </p> \n");
+	 );
+  // What to print as a message
+  if (cmd==0){ // If DROP n
+    printf("<p> You dropped g o l d and received precious m a n n a. </p>\n");
+  }
+  else if(cmd == 3){//If REFRESH
+    printf("<p> Mmm fresh Arizona Iced Tea (c). </p> \n");
+  }
+  else if(cmd == 2){ // Exit
+    printf("<p> THAT IS NOT VERY CASH MONEY OF YOU </p> \n");
+  }
+  else if(cmd == 5){ // Dead
+    printf("<p> You have died. RIP </p> \n");
+  }
+  else if(cmd == 1){ // If play, print a box explaining game and linking to game
+    printf("<p> You and I are going to create a song. Make sure that your lines rhyme with mine. </p>\n"
+	   "<form method=\"post\" action=\"http://cs.mcgill.ca/~jvince20/cgi-bin/challenge.cgi\">\n"
+	   "<input type=\"hidden\" name=\"inventory\" value=\"%d,%d\">\n", mana,gold);
+    printf("<input type=\"submit\" value=\"GO\">\n");
+  }
+  else{ // Not valid
+    printf("<p> Invalid command, mortal! Try again. </p> \n");
+  }
+  if(cmd != 2 && cmd != 5 && cmd !=1 ){ // Not dead, exit or play, print instructions + navigation
+    printf("<p> In this d i g i t a l reality, you can DROP 2 gold to get 1 manna. You may also REFRESH yourself with some delicious Arizona Iced Tea (c).</p>\n"
+	   "<p> Type PLAY to PLAY. Type EXIT to EXIT this mortal coil. </p>\n"
+	   "<p> Click a direction to travel to a new world. </p>\n"
+	   "</div>\n"
+	   "<div id=\"inv\" class=\"output\">\n"
+	   "<p><b> Inventory </b> </p> \n");
 
-  printf("<p> gold: %d </p>\n", gold);
-  printf("<p> mana: %d </p>\n", mana);
-
+    printf("<p> gold: %d </p>\n", gold);
+    printf("<p> mana: %d </p>\n", mana);
+    
   printf("</div>\n"
 	 "</div>\n"
 	 "<div class=\"controls\">\n"
-	 "<h1>4 2 0</h1>\n");
+	 "<h1>The F l o r a l Shoppe</h1>\n");
   printf("<div>\n"
 	 "<form method=\"post\" action=\"http://cs.mcgill.ca/~smonfo1/cgi-bin/transporter.py\">\n");
 
@@ -187,6 +235,7 @@ void printHTML(int mana, int gold, int cmd, int n){
 	 "<input id=\"S\" class=\"button\" type=\"submit\" value=\"South\" name=\"South\">\n"
 	 "</form>\n"
 	 "</div>\n");
+  }
   printf("</div>\n"
 	 "</body>\n"
 	 "</html>\n"); // Closing tags
@@ -205,6 +254,17 @@ void alterRes(int goldAdded){ // How much gold to gain
   fscanf(in, "%d,%d,%d", &mana, &gold, &occ);
   fclose(in); // Close csv for reading
   gold+=goldAdded;
+  FILE* out = fopen("../resources.csv", "wt"); // Overwrite csv
+  fprintf(out,"%d,%d,%d", mana, gold, occ); // Put in new values
+  fclose(out); 
+}
+
+void oc(int occup){
+  FILE* in = fopen("../resources.csv", "rt"); // new pointer to read existing vals
+  int mana, gold, occ;
+  fscanf(in, "%d,%d,%d", &mana, &gold, &occ);
+  fclose(in); // Close csv for reading
+  occ=occup; // Mark room as occupied
   FILE* out = fopen("../resources.csv", "wt"); // Overwrite csv
   fprintf(out,"%d,%d,%d", mana, gold, occ); // Put in new values
   fclose(out); 
