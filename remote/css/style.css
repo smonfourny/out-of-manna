@@ -1,0 +1,79 @@
+body {
+    background: url(../img/gradient.png) no-repeat center center; 
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          -o-background-size: cover;
+          background-size: cover;
+}
+
+.main {
+    background: url(../img/bg2.png) no-repeat center center; 
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          -o-background-size: cover;
+          background-size: cover;
+    padding: 3em 3em 3em 3em;
+    height: 70%;
+    width: auto;
+    position: relative;
+}
+
+.output {
+    background-color: rgba(255,255,255,0.7);
+    display: inline-block;
+    border: 2px solid #EA6588;
+}
+
+div#inv {
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    margin-bottom: 5%;
+    width: 10%;
+    padding: 1em 1em 1em 1em;
+}
+
+div#text {
+    position: absolute;
+    bottom: 0;
+    right: 15%;
+    margin-bottom: 5%;
+    width: 40%;
+    padding: 2em 2em 2em 2em;
+}
+
+.controls {
+    height: 10em;
+}
+
+div {
+    text-align: center;
+}
+
+div div div {
+    display: inline-block;
+}
+
+h1{
+    /* Align headers in the center */
+    text-align: center;
+}
+
+input#cmd{
+
+}
+input.button{
+    padding: 5px;
+}
+input#N{
+    text-align: center;
+}
+input#W{
+    /*float:left;*/
+}
+input#E{
+    /*float:right;*/
+}
+input#S{
+    text-align: center;
+}
