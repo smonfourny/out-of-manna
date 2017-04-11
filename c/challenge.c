@@ -20,12 +20,20 @@ void pickWord(int inputState);
 void *pickLines(int inputState, int *lines);
 void newSong();
 void addSongLine(char *toWrite);
+int* parseInv(char*)
 
 void main()
 {
 	printf("Content-type: text/html\n\n");
 	printf("<html><head><title>T h e F l o r a l S h o p p e</title><!--Linking CSS-->");
-	char playerIn[256];
+	int n = getenv("CONTENT_LENGTH"); // Get the length of stdin
+	char inv[n+2]; // Array to store inventory
+	fgets(inv, n+1); // Get the input
+	char playerIn[n+2];
+	strtok_r(inv, "&", &playerIn); // Tokenize input, separating inventory
+	int * numbers = parseInv(inv); // Get mana and gold from inv
+	int mana = *(numbers);
+	int gold = *(numbers+1); 
 	char lastWord[256];
 	int linesInFile[2] = {0,0};
 	int inputState;
@@ -513,4 +521,36 @@ void addSongLine(char *toWrite)
         file = fopen("song.txt","a");
         fprintf(file,"%s\n",toWrite);
         fclose(file);
+}
+
+int* parseInv(char* inv){
+	// inv should be inventory=#%2C#, with %2C being a POST parsed comma and # being a number
+	int numbers[4]; // Array to store mana and gold, will return as ptr
+	char* temp = (char*)malloc(40); // Malloc temp pointer
+	int k=0; // Int to index through temp
+	int j = 10; // Int to index through inv, start at 10, after =
+	char c=*(inv+j); // Char after =
+	// Will iterate through inv until char is %
+	while(c!='%'){
+	  *(temp+k)=c; // If we passed check of c='%', then we have a number
+	  k++; // Increment k
+	  j++; // Increment j
+	  c = *(inv+j); // Get next char
+	}
+	*(temp+k)='\0'; // Add a null at the end
+	numbers[0] = atoi(temp); // Mana as an int
+	// j is now at the index of the %, so j+3 will give us char after %2C
+	j+=3;
+	k=0; // Reset index of temp, starting over for next number
+	c=*(inv+j);
+	while(c!='\0'){ // Iterate until we hit end of string
+	  *(temp+k)=c; // Take number that passed check
+	  k++;
+	  j++;
+	  c = *(inv+j);
+	}
+	*(temp+k)='\0'; // Add null
+	numbers[1] = atoi(temp); // Gold as an int
+	int* nbAsPtr=numbers; // Make a pointer that points to array 
+	return nbAsPtr; 
 }
