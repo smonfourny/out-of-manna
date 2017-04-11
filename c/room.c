@@ -39,7 +39,7 @@ int main(){
     oc(0); // Unoccupied
     printHTML(mana, gold, 5, 0);
   }
-  else if(gold >=0){ // Winner
+  else if(gold >=100){ // Winner
     oc(0); // Mark room as unoccupied
     printHTML(mana, gold, 8, 0);
   }
@@ -225,7 +225,7 @@ void printHTML(int mana, int gold, int cmd, int n){
 	   "</form>");
   }
   else if(cmd == 8){ // Won the dungeon crawler!
-    printf("<Congratulations, for you have won the dungeon crawler! </p>\n");
+    printf("<p>Congratulations, for you have won the dungeon crawler! </p>\n");
   }
   else{ // Not valid
     printf("<p> Invalid command, mortal! Try again. </p> \n");
