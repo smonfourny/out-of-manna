@@ -36,7 +36,12 @@ int main(){
   int gold = *(numbers+1); // numbers[1] has gold
   
   if(mana <= 0){ // Death
+    oc(0); // Unoccupied
     printHTML(mana, gold, 5, 0);
+  }
+  else if(gold >=0){ // Winner
+    oc(0); // Mark room as unoccupied
+    printHTML(mana, gold, 8, 0);
   }
   else{
   // Deal with various commands with if statements
@@ -219,15 +224,18 @@ void printHTML(int mana, int gold, int cmd, int n){
     printf("<input type=\"submit\" value=\"TAKE\">\n"
 	   "</form>");
   }
+  else if(cmd == 8){ // Won the dungeon crawler!
+    printf("<Congratulations, for you have won the dungeon crawler! </p>\n");
+  }
   else{ // Not valid
     printf("<p> Invalid command, mortal! Try again. </p> \n");
   }
-  if(cmd != 2 && cmd != 5 && cmd !=1 ){ // Not dead, exit or play, print instructions + navigation
+  if(cmd != 2 && cmd != 5 && cmd !=1 && cmd !=4 && cmd!=7 && cmd!=8){ // Not dead, exit, play or win, print instructions + navigation
     printf("<p> In this d i g i t a l reality, you can DROP 2 gold to get 1 manna. You may also REFRESH yourself with some delicious Arizona Iced Tea (c).</p>\n"
 	   "<p> Type PLAY to PLAY. Type EXIT to EXIT this mortal coil. </p>\n"
-	   "<p> Click a direction to travel to a new world. </p>\n"
-	   "</div>\n");
+	   "<p> Click a direction to travel to a new world. </p>\n");
   }
+  printf("</div>\n");
   printf("<div id=\"inv\" class=\"output\">\n"
 	   "<p><b> Inventory </b> </p> \n");
 
@@ -238,7 +246,7 @@ void printHTML(int mana, int gold, int cmd, int n){
 	 "</div>\n"
 	 "<div class=\"controls\">\n"
 	 "<h1>The F l o r a l Shoppe</h1>\n");
-  if(cmd !=2 && cmd !=5 && cmd !=1){ // Not dead, exit or play, print nav
+  if(cmd !=2 && cmd !=5 && cmd !=1 && cmd !=4 && cmd!=7 && cmd!=8){ // Not dead, exit, play or win, print nav
     printf("<div>\n"
 	   "<form method=\"post\" action=\"http://cs.mcgill.ca/~smonfo1/cgi-bin/transporter.py\">\n");
 
