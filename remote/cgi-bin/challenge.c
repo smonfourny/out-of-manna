@@ -16,16 +16,25 @@ void copyString(char *newString, char *oldString);
 void purgeExtraChars(char *toChange);
 int findRhyme(char *inWord, int startLine, int endLine);
 void printFile();
-void pickWord(int inputState);
+void pickWord(int inputState, int mana, int gold);
 void *pickLines(int inputState, int *lines);
 void newSong();
 void addSongLine(char *toWrite);
+int* parseInv(char*);
 
 void main()
 {
+	fflush(stdout);
 	printf("Content-type: text/html\n\n");
 	printf("<html><head><title>T h e F l o r a l S h o p p e</title><!--Linking CSS-->");
-	char playerIn[256];
+	int n = atoi(getenv("CONTENT_LENGTH")); // Get the length of stdin
+	char inv[n+2]; // Array to store inventory
+	fgets(inv, n+1, stdin); // Get the input
+	char* playerIn = (char*) malloc(256);
+	strtok_r(inv, "&", &playerIn); // Tokenize input, separating inventory
+	int * numbers = parseInv(inv); // Get mana and gold from inv
+	int mana = *(numbers);
+	int gold = *(numbers+1); 
 	char lastWord[256];
 	int linesInFile[2] = {0,0};
 	int inputState;
@@ -33,11 +42,18 @@ void main()
 	plusesToSpaces(playerIn);
 	restoreCharacters(playerIn);
 	inputState = getInputState(playerIn);
+	if (inputState == -1)
+	{
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
+		printBold("You're going to leave?");
+		printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
+                printf("<form method=\"POST\" action=\"./room.cgi\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"hidden\" name=\"command\" value=\"EXIT\"><input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
+	}
 	if (inputState == 0)
 	{
 		newSong();
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); //No cans (Set)
-		pickWord(inputState);
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can03.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
+		pickWord(inputState, mana, gold);
 	}
 	else
 	{
@@ -51,9 +67,11 @@ void main()
 			if (inputState > 4)
 			{
 				addSongLine(playerIn);
-				printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); //All cans (not set)
+				printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can00.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">");
 				printFile();
 				printBold("You're winner!");
+				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
+                                printf("<form method=\"POST\" action=\"./room.cgi\"> Press Here To Return: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"hidden\" name=\"command\" value=\"WIN\"><input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold); //SET THE ACTION TO THE DESTINATION
 			}
 			else {
 				addSongLine(playerIn);
@@ -61,10 +79,10 @@ void main()
 				printImage(inputState);
 				inputState-=2;
 				printBold("Well done. Here is your next rhyme.");
-				pickWord(inputState);
+				pickWord(inputState, mana, gold);
 			}
 		}
-		else
+		else if (inputState != -1)
 		{
 			printImage(inputState);
 			printBold("That does not rhyme, try again. Here's your prompt:");
@@ -72,38 +90,38 @@ void main()
         		{
                         	printBold("I just can't comprehend it");
 				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
                 	}
                 	else if (inputState == 2)
                 	{
                         	printBold("I'm giving everything I've got");
 				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                                printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
+				printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
 			}
                 	else if (inputState == 3)
                 	{
                         	printBold("I won't slow down");
 				printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                                printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-                	}
+                		printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+			}
                 	else if (inputState == 4)
                 	{
                         	printBold("I'll keep going on");
                                 printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-				printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-                	}
+                		printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+			}
 			else if (inputState == 5)
                         {
                                 printBold("So it's not up to you");
                                 printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-				printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-                        }
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+			}
                         else if (inputState == 6)
                         {
                                 printBold("So don't say you can't make a move");
                                 printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-				printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-                        }
+                        	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+			}
 
 
 		}
@@ -115,15 +133,15 @@ void printImage(int inputState)
 {
 	if ((inputState == 1) || (inputState == 2))
 	{
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // No cans
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can03.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // No cans
 	}
 	else if ((inputState == 3) || (inputState == 4))
         {
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // One can
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can02.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // One can
         }
 	else if ((inputState == 5) || (inputState == 6))
         {
-		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // Two cans
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/can01.css\"></head><body><div class=\"main\" id=\"bg\"><div id=\"text\" class=\"output\">"); // Two cans
         }
 }
 
@@ -241,6 +259,41 @@ int getInputState(char *playerIn)
                         {
                                 inputState++;
                         }
+		}
+		if ((counter == 3) && (*pointer == 'Q'))
+		{
+			*pointer++;
+			if (*pointer == 'U')
+			{
+				*pointer++;
+				if (*pointer == 'I')
+				{
+					*pointer++;
+					if (*pointer == 'T')
+					{
+						*pointer++;
+						if (*pointer == '\0')
+						{
+							return -1;
+						}
+						else
+						{
+							*pointer--;
+						}
+					}
+					else
+					{
+						*pointer--;
+					}
+				}
+				else
+				{
+					*pointer--;
+				}
+			}
+			else {
+				*pointer--;
+			}
 		}
 		if (counter > 2)
 		{
@@ -400,12 +453,13 @@ void printFile()
                 //Only works when you copy the word from the file to a new string
                 copyString(lineCopy,currentLine);
 		printf("<p>%s</p>",lineCopy);
+		fflush(stdout);
         }
 
 }
 
 
-void pickWord(int inputState)
+void pickWord(int inputState, int mana, int gold)
 {
 	int picker;
 	srand(time(NULL));
@@ -417,15 +471,15 @@ void pickWord(int inputState)
 			printBold("I just can't comprehend it");
 			addSongLine("I just can't comprehend it");
 			printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                        printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"1O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
 		}
 		else if (picker == 1)
         	{
 			printBold("I'm giving everything I've got");
 			addSongLine("I'm giving everything I've got");
 			printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                        printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-        	}
+        		printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"1T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+		}
 	}
 	else if ((inputState == 1) || (inputState == 2))
 	{
@@ -434,14 +488,14 @@ void pickWord(int inputState)
 			printBold("I won't slow down");
 			addSongLine("I won't slow down");
 			printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                        printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-        	}
+        		printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"2O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+		}
 		else if (picker == 1)
 		{
 			printBold("I'll keep going on");
 			addSongLine("I'll keep going on");
 			printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-                       	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"2T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
 		}
 	}
 	else if ((inputState == 3) || (inputState == 4))
@@ -451,15 +505,15 @@ void pickWord(int inputState)
                         printBold("So it's not up to you");
                         addSongLine("So it's not up to you");
                         printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
+			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"3O\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
                 }
                 else if (picker == 1)
                 {
                         printBold("So don't say you can't make a move");
                         addSongLine("So don't say you can't make a move");
                         printf("</div></div><div class=\"controls\"><h1>The F l o r a l Shoppe</h1><div>");
-			printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>");
-                }
+                	printf("<form method=\"POST\" action=\"challenge.cgi\"> Enter your rhyme: <input type=\"hidden\" name=\"inventory\" value=\"%d,%d\"> <input type=\"text\" name=\"3T\"> <input type=\"submit\" value=\"Yeah!\"> </form></div>",mana,gold);
+		}
         }
 }
 
@@ -499,6 +553,7 @@ void *pickLines(int inputState, int *lines)
 
 void newSong()
 {
+	fflush(stdout);
 	FILE *file;
 	char emptyString[1];
 	emptyString[0] = '\0';
@@ -509,8 +564,41 @@ void newSong()
 
 void addSongLine(char *toWrite)
 {
+	fflush(stdout);
 	FILE *file;
         file = fopen("song.txt","a");
         fprintf(file,"%s\n",toWrite);
         fclose(file);
+}
+
+int* parseInv(char* inv){
+	// inv should be inventory=#%2C#, with %2C being a POST parsed comma and # being a number
+	int numbers[4]; // Array to store mana and gold, will return as ptr
+	char* temp = (char*)malloc(40); // Malloc temp pointer
+	int k=0; // Int to index through temp
+	int j = 10; // Int to index through inv, start at 10, after =
+	char c=*(inv+j); // Char after =
+	// Will iterate through inv until char is %
+	while(c!='%'){
+	  *(temp+k)=c; // If we passed check of c='%', then we have a number
+	  k++; // Increment k
+	  j++; // Increment j
+	  c = *(inv+j); // Get next char
+	}
+	*(temp+k)='\0'; // Add a null at the end
+	numbers[0] = atoi(temp); // Mana as an int
+	// j is now at the index of the %, so j+3 will give us char after %2C
+	j+=3;
+	k=0; // Reset index of temp, starting over for next number
+	c=*(inv+j);
+	while(c!='\0'){ // Iterate until we hit end of string
+	  *(temp+k)=c; // Take number that passed check
+	  k++;
+	  j++;
+	  c = *(inv+j);
+	}
+	*(temp+k)='\0'; // Add null
+	numbers[1] = atoi(temp); // Gold as an int
+	int* nbAsPtr=numbers; // Make a pointer that points to array 
+	return nbAsPtr; 
 }

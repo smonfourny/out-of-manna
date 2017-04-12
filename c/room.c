@@ -165,13 +165,13 @@ void printHTML(int mana, int gold, int cmd, int n){
 	 "<title>T h e F l o r a l S h o p p e</title> \n"
 	 "<!--Linking CSS-->\n");
   if(cmd == 5){ // Death screen, different css
-    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/dead.css\">\n");
+    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://cs.mcgill.ca/~smonfo1/css/dead.css\">\n");
   }
   else if(cmd == 2){ // Exit screen, different background, different css
-    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/exit.css\">\n");
+    printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://cs.mcgill.ca/~smonfo1/css/exit.css\">\n");
   }
   else{ // Normal situation
-   printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/style.css\">\n"); 
+   printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://cs.mcgill.ca/~smonfo1/css/style.css\">\n"); 
   }
   printf("</head>\n"
 	 "<body>\n"
